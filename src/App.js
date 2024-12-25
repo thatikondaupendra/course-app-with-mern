@@ -1,6 +1,8 @@
 import React, { Component } from 'react'; 
 import "bootstrap/dist/css/bootstrap.min.css"; 
 import CourseList from './CourseList'; 
+import './App.css';
+
  
 class App extends Component { 
   render() { 

@@ -3,20 +3,16 @@ const bodyParser = require("body-parser");
 const dotenv = require("dotenv"); 
 const mongoose = require("mongoose"); 
 const cors = require("cors"); 
+const path = require("path"); 
  
 /** 
  * Load environment variables from .env.jlc file. 
  */ 
 dotenv.config({ path: "env.jlc" }); 
  
- 
- 
- 
 /** 
- * 
  * Connect to MongoDB. 
  */ 
-console.log(process.env.MONGODB_URI,"MMMMM")
 mongoose 
   .connect(process.env.MONGODB_URI, { 
     useUnifiedTopology: true, 
@@ -31,7 +27,7 @@ mongoose
       console.log( 
         "MongoDB connection error. Please make sure MongoDB is running." 
       ); 
-      process.exit(); 
+  process.exit(); 
     } 
   ); 
  
@@ -39,14 +35,12 @@ mongoose
  * Add middlewares 
  */ 
 const app = express(); 
-const PORT = process.env.PORT || 5300; 
- 
 app.use(bodyParser.json()); 
 app.use(bodyParser.urlencoded({ extended: false })); 
+app.use(express.static(path.join(__dirname, "build"))); 
 app.use(cors()); 
  
-const mycourseController = require("./src/controllers/courseController"); 
- 
+const mycourseController = require("./myserver/controllers/CourseController"); 
 app.use("/myapi/", mycourseController); 
  
 /** 
@@ -56,13 +50,19 @@ app.get("/hello", (req, res) => {
     console.log("Request for - /hello"); 
      return res.send("Hello Guys -- I am Ready"); 
   }); 
-  
  
- /** 
- * start Express server on port 5300 
- */ 
-app.listen(PORT, () => { 
-    console.log("Express server is running at http://localhost:%d", PORT); 
-    console.log("Press CTRL-C to stop\n"); 
+  app.get("*", (req, res) => { 
+    res.sendFile( 
+      path.join(__dirname, "build", "index.html") 
+    ); 
   }); 
  
+  /** 
+ * start Express server on port 5300 
+ */ 
+ 
+const PORT = process.env.PORT || 5300; 
+app.listen(PORT, () => { 
+    console.log("Hello, Express server is running at http://localhost:%d", PORT); 
+    console.log("Press CTRL-C to stop\n"); 
+  }); 
